@@ -42,12 +42,14 @@ openssl ca -config ca/openssl_server.cnf -gencrl -out ca/crl/ca-crl.pem -passin 
 # Sprawdzenie CRL
 openssl crl -in ca/crl/ca-crl.pem -noout -text
 
-# Weryfikacja z uwzględnieniem CRL
 echo $'\n=== Weryfikacja z uwzglednieniem CRL przed odwolaniem ==='
-openssl verify -CAfile ca/certs/ca-cert.pem -CRLfile ca/crl/ca-crl.pem server/server-cert.pem
+openssl verify -CAfile ca/certs/ca-cert.pem -CRLfile ca/crl/ca-crl.pem -crl_check server/server-cert.pem
 
 # Odwołanie certyfikatu (symulacja)
 openssl ca -config ca/openssl_server.cnf -revoke server/server-cert.pem -passin pass:2137
 
+# Wygenerowanie nowej CRL
+openssl ca -config ca/openssl_server.cnf -gencrl -out ca/crl/ca-crl.pem
+
 echo $'\n=== Weryfikacja z uwzglednieniem CRL po odwolaniem ==='
-openssl verify -CAfile ca/certs/ca-cert.pem -CRLfile ca/crl/ca-crl.pem server/server-cert.pem
+openssl verify -CAfile ca/certs/ca-cert.pem -CRLfile ca/crl/ca-crl.pem -crl_check server/server-cert.pem
